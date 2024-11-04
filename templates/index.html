@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Horas</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <img src="/static/logo_caengel.png" alt="Logo CAENGEL" class="logo">
+                
+                <!-- Login Admin -->
+                <div class="login-admin">
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <input type="text" id="nome" name="nome" placeholder="Usuário" required>
+                        <input type="password" id="senha" name="senha" placeholder="Senha" required>
+                        <button type="submit">Logar</button>
+                    </form>
+                </div>
+            </div>
+            <h1>Controle de Horas</h1>
+        </header>
+
+        <hr>
+
+        <!-- Seção de Check-in -->
+        <h2>Fazer Check-in</h2>
+        <form method="POST" action="{{ url_for('checkin') }}">
+            <label for="pessoa">Nome:</label>
+            <select id="pessoa" name="nome" required>
+                <option value="">Selecione uma pessoa</option>
+                {% for pessoa in pessoas %}
+                    <option value="{{ pessoa[1] }}">{{ pessoa[1] }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Fazer Check-in</button>
+        </form>
+
+        <hr>
+
+        <!-- Seção de Horas Trabalhadas -->
+        {% if nome_selecionado and registros %}
+            <h2>Horas Trabalhadas</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Data</th>
+                        <th>Hora de Entrada</th>
+                        <th>Hora de Saída</th>
+                        <th>Total de Horas</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in registros %}
+                        <tr>
+                            <td>{{ registro[1] }}</td>
+                            <td>{{ registro[2] }}</td>
+                            <td>{{ registro[3] }}</td>
+                            <td>{{ registro[4] if registro[4] is not none else 'N/A' }}</td>
+                            <td>{{ registro[5] if registro[5] is not none else 'N/A' }}</td>
+                            <td>
+                                {% if registro[4] is none %}
+                                    <form method="POST" action="{{ url_for('checkout', id=registro[0]) }}">
+                                        <button type="submit">Fazer Check-out</button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>Nenhum registro encontrado. Selecione uma pessoa para ver as horas trabalhadas.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

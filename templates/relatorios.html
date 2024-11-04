@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios de Check-in</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Relatórios de Check-in</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Data</th>
+                    <th>Hora de Entrada</th>
+                    <th>Hora de Saída</th>
+                    <th>Total de Horas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for registro in registros %}
+                <tr>
+                    <td>{{ registro[1] }}</td>
+                    <td>{{ registro[2] }}</td>
+                    <td>{{ registro[3] }}</td>
+                    <td>{{ registro[4] }}</td>
+                    <td>{{ registro[5] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="/">Voltar</a>
+    </div>
+</body>
+</html>

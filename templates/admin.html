@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/admin_style.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <header class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Painel Administrativo</h1>
+            <p>Bem-vindo, {{ usuario }}</p>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        </header>
+
+        <section class="mb-5">
+            <h2>Resumo de Horas Trabalhadas da Semana Atual</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Total de Horas na Semana</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in registros_semana %}
+                        <tr>
+                            <td>{{ registro.nome }}</td>
+                            <td>{{ registro.total_horas_semana }} horas</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section class="mb-5">
+            <h2>Registros da Última Semana</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Data</th>
+                        <th>Check-in</th>
+                        <th>Check-out</th>
+                        <th>Total de Horas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for registro in registros_semana %}
+                        {% for reg in registro.registros %}
+                        <tr>
+                            <td>{{ registro.nome }}</td>
+                            <td>{{ reg[0] }}</td>
+                            <td>{{ reg[1] or 'Pendente' }}</td>
+                            <td>{{ reg[2] or 'Pendente' }}</td>
+                            <td>
+                                {% if reg[1] and reg[2] %}
+                                    {% set check_in = reg[1] | to_datetime %}
+                                    {% set check_out = reg[2] | to_datetime %}
+                                    {% if check_in and check_out %}
+                                        {{ ((check_out - check_in).total_seconds() / 3600) | round(2) }} horas
+                                    {% else %}
+                                        Pendente
+                                    {% endif %}
+                                {% else %}
+                                    Pendente
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Pessoas Cadastradas</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if pessoas %}
+                        {% for pessoa in pessoas %}
+                        <tr>
+                            <td>{{ pessoa[0] }}</td>
+                            <td>{{ pessoa[1] }}</td>
+                            <td>
+                                <form method="POST" action="{{ url_for('excluir_pessoa', id=pessoa[0]) }}">
+                                    <button type="submit" class="btn btn-danger">Excluir</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3">Nenhuma pessoa cadastrada.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>Cadastrar Nova Pessoa</h2>
+            <form action="{{ url_for('adicionar_pessoa') }}" method="POST">
+                <div class="form-group">
+                    <input type="text" name="nome" class="form-control" placeholder="Nome da Pessoa" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
+        </section>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
